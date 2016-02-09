@@ -5,8 +5,8 @@ import (
 	"encoding/gob"
 	"fmt"
 
-	"github.com/Sirupsen/logrus"
-	"github.com/streadway/amqp"
+	"github.com/Ryanair/logrus"
+	"github.com/Ryanair/amqp"
 )
 
 type AMQPHook struct {
