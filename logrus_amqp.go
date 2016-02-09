@@ -1,12 +1,10 @@
 package logrus_amqp
 
 import (
-	"bytes"
-	"encoding/gob"
 	"fmt"
 
-	"github.com/Ryanair/logrus"
 	"github.com/Ryanair/amqp"
+	"github.com/Ryanair/logrus"
 )
 
 type AMQPHook struct {
@@ -66,7 +64,7 @@ func (hook *AMQPHook) Fire(entry *logrus.Entry) error {
 		return err
 	}
 
-	body, err := getBytes(entry.Data)
+	body, err := entry.String()
 	if err != nil {
 		return err
 	}
@@ -78,23 +76,13 @@ func (hook *AMQPHook) Fire(entry *logrus.Entry) error {
 		hook.Immediate,
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body:        body,
+			Body:        []byte(body),
 		})
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func getBytes(key interface{}) ([]byte, error) {
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	err := enc.Encode(key)
-	if err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
 }
 
 // Levels is available logging levels.
