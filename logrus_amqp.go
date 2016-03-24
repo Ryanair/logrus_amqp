@@ -22,14 +22,14 @@ type AMQPHook struct {
 	AutoDeleted  bool
 }
 
-func NewAMQPHook(server, username, password, exchange, routingKey string) *AMQPHook {
+func NewAMQPHook(server, username, password, exchange, routingKey, exchangeType string) *AMQPHook {
 	hook := AMQPHook{}
 
 	hook.AMQPServer = server
 	hook.Username = username
 	hook.Password = password
 	hook.Exchange = exchange
-	hook.ExchangeType = "direct"
+	hook.ExchangeType = exchangeType
 	hook.Durable = true
 	hook.RoutingKey = routingKey
 
@@ -38,7 +38,7 @@ func NewAMQPHook(server, username, password, exchange, routingKey string) *AMQPH
 
 // Fire is called when an event should be sent to the message broker
 func (hook *AMQPHook) Fire(entry *logrus.Entry) error {
-	dialURL := fmt.Sprintf("amqp://%s:%s@%s/", hook.Username, hook.Password, hook.AMQPServer)
+	dialURL := fmt.Sprintf("amqp://%s:%s@%s", hook.Username, hook.Password, hook.AMQPServer)
 	conn, err := amqp.Dial(dialURL)
 	if err != nil {
 		return err
@@ -58,6 +58,7 @@ func (hook *AMQPHook) Fire(entry *logrus.Entry) error {
 		hook.AutoDeleted,
 		hook.Internal,
 		hook.NoWait,
+		true,
 		nil,
 	)
 	if err != nil {
